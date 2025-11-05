@@ -2,6 +2,7 @@
 import { fetchProducts } from "./functions";
 import { fetchCategories } from "./functions";
 import { saveVote, getVotes } from "./firebase";
+/*Verificar nombre metodos*/
 
 /*(() => {
     alert("¡Bienvenido a la página!");
@@ -125,7 +126,7 @@ const enableForm = () => {
         event.preventDefault();
         const select = document.getElementById("select_product");
         const valor = select.value;
-        const result = await saveVotes(valor);
+        const result = await saveVote(valor);
         alert(result.message);
     });
 };
