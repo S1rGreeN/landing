@@ -2,6 +2,7 @@
 import { fetchProducts } from "./functions";
 import { fetchCategories } from "./functions";
 import { saveVote, getVotes } from "./firebase";
+/*Verificar nombre metodos*/
 
 /*(() => {
     alert("¡Bienvenido a la página!");
