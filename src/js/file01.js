@@ -1,6 +1,7 @@
 "use strict"
 import { fetchProducts } from "./functions";
 import { fetchCategories } from "./functions";
+import { saveVote, getVotes } from "./firebase";
 
 /*(() => {
     alert("¡Bienvenido a la página!");
@@ -116,11 +117,85 @@ let renderCategories = async () => {
         alert('Error inesperado: ' + error.message);
         
     }
-}
+};
+
+const enableForm = () => {
+    const formulario = document.getElementById("form_voting");
+    formulario.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const select = document.getElementById("select_product");
+        const valor = select.value;
+        const result = await saveVotes(valor);
+        alert(result.message);
+    });
+};
+const displayVotes = async () => {
+  let tableHTML = `
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Total de votos</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  try {
+    const response = await getVotes();
+
+    if (!response.status) {
+      tableHTML += `<tr><td colspan="2">${response.message}</td></tr>`;
+    } else {
+      const data = response.data;
+      const counts = {};
+
+      for (const [key, value] of Object.entries(data)) {
+        if (value.productID) {
+          const id = value.productID;
+          counts[id] = (counts[id] || 0) + 1;
+        } else if (typeof value === "object") {
+          let subcount = 0;
+          for (const subKey of Object.keys(value)) {
+            if (subKey !== "date") subcount++;
+          }
+          counts[key] = (counts[key] || 0) + subcount;
+        }
+      }
+      for (const [product, total] of Object.entries(counts)) {
+        tableHTML += `
+          <tr>
+            <td>${product}</td>
+            <td>${total}</td>
+          </tr>
+        `;
+      }
+
+      if (Object.keys(counts).length === 0) {
+        tableHTML += `<tr><td colspan="2">No hay votos aún</td></tr>`;
+      }
+    }
+
+    tableHTML += `
+        </tbody>
+      </table>
+    `;
+
+    const resultados = document.getElementById("results");
+    resultados.innerHTML = tableHTML;
+
+  } catch (error) {
+    console.error(error);
+    alert("Error al mostrar los resultados");
+  }
+};
+
 
 (() => {
     showToast();
     showVideo();
     renderProducts();
     renderCategories();
+    enableForm();
+    displayVotes();
 })();
