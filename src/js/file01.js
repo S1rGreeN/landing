@@ -125,7 +125,7 @@ const enableForm = () => {
         event.preventDefault();
         const select = document.getElementById("select_product");
         const valor = select.value;
-        const result = await saveVotes(valor);
+        const result = await saveVote(valor);
         alert(result.message);
     });
 };
